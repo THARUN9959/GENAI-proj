@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SummAI - Intelligent Text Summarization</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo">
+                    <span class="logo-icon">⚡</span>
+                    <div>
+                        <h1 class="header-title">SummAI</h1>
+                        <p class="header-subtitle">Intelligent Text Summarization</p>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+
+                <button id="analyticsBtn" class="analytics-btn" title="View usage analytics">
+                    <span>📊</span>
+                </button>
+                <button id="themeToggle" class="theme-toggle" title="Toggle dark mode">
+                    <span class="theme-icon">🌙</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Analytics Modal -->
+    <div id="analyticsModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Usage Analytics</h2>
+                <button id="closeAnalyticsBtn" class="modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-label">Total Summaries</div>
+                        <div class="analytics-value" id="analyticsTotalSummaries">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Texts Processed</div>
+                        <div class="analytics-value" id="analyticsTotalTexts">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Words Generated</div>
+                        <div class="analytics-value" id="analyticsTotalGenerated">0</div>
+                    </div>
+                    <div class="analytics-card">
+                        <div class="analytics-label">Avg Compression</div>
+                        <div class="analytics-value" id="analyticsCompression">0</div>
+                    </div>
+                </div>
+                <div class="analytics-section">
+                    <h3>Methods Used</h3>
+                    <div id="methodsUsed" class="methods-breakdown"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Container -->
+    <main class="container">
+        <div class="layout">
+            <!-- Input Section -->
+            <section class="section input-section">
+                <div class="section-header">
+                    <h2>Source Text</h2>
+                    <p>Paste content for AI-powered summarization</p>
+                </div>
+
+
+
+                <textarea 
+                    id="inputText" 
+                    class="textarea" 
+                    placeholder="Paste your text, article, document, or business content here. Minimum 3 words required..."
+                    spellcheck="true"
+                ></textarea>
+
+                <div class="text-info">
+                    <div class="info-item">
+                        <span class="info-label">Characters:</span>
+                        <span id="charCount" class="info-value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Words:</span>
+                        <span id="wordCount" class="info-value">0</span>
+                    </div>
+                    <div class="info-item">
+                        <span class="info-label">Sentences:</span>
+                        <span id="sentenceCount" class="info-value">0</span>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Summarization Method</label>
+                    <div class="method-buttons">
+                        <button class="method-btn active" data-method="normal">normal</button>
+                        <button class="method-btn" data-method="business_insights">Business Insights</button>
+                    </div>
+                    <p class="method-hint" id="methodHint">Standard summarization method</p>
+                </div>
+
+                <div class="control-group">
+                    <div class="control-header">
+                        <label>Summary Length</label>
+                        <span id="ratioValue" class="ratio-display">40%</span>
+                    </div>
+                    <input 
+                        type="range" 
+                        id="summaryRatio" 
+                        min="10" 
+                        max="90" 
+                        value="40"
+                        class="slider"
+                        aria-label="Summary length percentage"
+                    >
+                    <div class="ratio-labels">
+                        <span>Concise (10%)</span>
+                        <span>Balanced (50%)</span>
+                        <span>Detailed (90%)</span>
+                    </div>
+                </div>
+
+                <button id="summarizeBtn" class="btn btn-primary">
+                    <span>Generate Summary</span>
+                    <span class="btn-icon">→</span>
+                </button>
+            </section>
+
+            <!-- Output Section -->
+            <section class="section output-section">
+                <div class="section-header">
+                    <h2>Summary Result</h2>
+                    <p>AI-extracted key points and insights</p>
+                </div>
+
+                <div id="statsContainer" class="stats-group hidden">
+                    <div class="stat">
+                        <div class="stat-label">Original</div>
+                        <div class="stat-value"><span id="statOriginal">0</span></div>
+                        <div class="stat-unit">words</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Summary</div>
+                        <div class="stat-value"><span id="statSummary">0</span></div>
+                        <div class="stat-unit">words</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-label">Compression</div>
+                        <div class="stat-value"><span id="statCompression">0</span>%</div>
+                        <div class="stat-unit">reduced</div>
+                    </div>
+                </div>
+
+                <div id="emptyState" class="state-message empty-state">
+                    <div class="state-icon">📄</div>
+                    <p>Enter text and click "Generate Summary" to begin</p>
+                    <p class="state-hint">Supports any length of text - articles, emails, reports, and more</p>
+                </div>
+
+                <div id="loadingState" class="state-message loading-state hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing and summarizing your text...</p>
+                    <p class="state-hint">This usually takes a few seconds</p>
+                </div>
+
+                <div id="errorState" class="state-message error-state hidden">
+                    <div class="state-icon">⚠️</div>
+                    <p id="errorMessage"></p>
+                </div>
+
+                <div id="resultsContent" class="results hidden">
+                    <div class="summary-text" id="summaryText"></div>
+
+                    <div id="metricsContainer" class="metrics-container hidden">
+                        <div class="metrics-row">
+                            <div class="metrics-section">
+                                <h3 class="metrics-title">Key Terms</h3>
+                                <div class="keywords-list" id="keywordsList"></div>
+                            </div>
+                            <div class="metrics-section">
+                                <h3 class="metrics-title">Readability</h3>
+                                <div class="readability-metrics" id="readabilityMetrics"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="action-group">
+                        <button id="copyBtn" class="btn btn-secondary" title="Copy summary to clipboard">
+                            <span class="btn-text">Copy</span>
+                            <span class="btn-feedback hidden">✓ Copied</span>
+                        </button>
+                        <button id="downloadBtn" class="btn btn-secondary" title="Download summary as text file">Download</button>
+                        <button id="clearBtn" class="btn btn-secondary" title="Clear all content">Clear</button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>SummAI • Powered by Advanced NLP & Flask • Extract insights from any text instantly</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+</body>
+</html>

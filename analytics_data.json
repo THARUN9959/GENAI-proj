@@ -1,0 +1,20 @@
+{
+  "total_summaries": 11,
+  "total_texts_processed": 11,
+  "total_words_processed": 3820,
+  "total_words_generated": 1963,
+  "average_compression_ratio": 48.94559202642393,
+  "methods_used": {
+    "normal": 3,
+    "business_insights": 0
+  },
+  "file_types_uploaded": {},
+  "daily_stats": {
+    "2025-12-05": {
+      "summaries": 11,
+      "words_processed": 3820,
+      "words_generated": 1963
+    }
+  },
+  "sessions": 11
+}
